@@ -2,14 +2,14 @@ from distutils.core import setup
 setup(
   name = 'effunet',         
   packages = ['effunet'],   
-  version = '0.0.1',      
+  version = '1.0.0',      
   license='MIT',
   description = 'UNet segmentation model with an efficientnet encoder',   
   author = 'Pranshu Mishra',                   
   author_email = 'pranshumshr.04@gmail.com',      
   url = 'https://github.com/pranshu97/effunet',   
-  download_url = 'https://github.com/pranshu97/effunet/archive/v0.1.tar.gz',
-  keywords = ['UNet', 'EfficienNet', 'Segmentation'],
+  download_url = 'https://github.com/pranshu97/effunet/archive/v1.0.0.tar.gz',
+  keywords = ['UNet', 'EfficientNet', 'Segmentation'],
   install_requires=[            
           'torch',
           'torchvision',

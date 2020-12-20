@@ -4,9 +4,9 @@ import torchvision.transforms as T
 
 def double_conv(in_,out_):
 	conv = nn.Sequential(
-		nn.Conv2d(in_,out_,kernel_size=3),
+		nn.Conv2d(in_,out_,kernel_size=3,padding=(1,1)),
 		nn.ReLU(inplace=True),
-		nn.Conv2d(out_,out_,kernel_size=3),
+		nn.Conv2d(out_,out_,kernel_size=3,padding=(1,1)),
 		nn.ReLU(inplace=True)
 		)
 	return conv
@@ -66,7 +66,7 @@ class UNet(nn.Module):
 		return x
 
 
-# image = torch.rand((1,1,572,572))
+# image = torch.rand((1,1,576,576))
 # model = UNet()
 # out = model(image)
 # print(out.shape)

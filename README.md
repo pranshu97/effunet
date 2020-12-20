@@ -8,7 +8,7 @@ Special thanks to [lukemelas](https://github.com/lukemelas) for the pytorch impl
 Install with `pip install effunet`
 
     from effunet import EffUNet
-    model = EffUNet(model='b0',out_channels=1,freeze_backbone=True,device='cuda')
+    model = EffUNet(model='b0',out_channels=1,freeze_backbone=True,pretrained=True,device='cuda')
 and you're good to go...
 
 License
