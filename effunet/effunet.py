@@ -5,12 +5,13 @@ from efficientnet_pytorch import EfficientNet
 
 
 # Utility Functions for the model
-def double_conv(in_,out_): # Double convolution layer for decoder 
+def double_conv(in_,out_,drop): # Double convolution layer for decoder 
 	conv = nn.Sequential(
 		nn.Conv2d(in_,out_,kernel_size=3,padding=(1,1)),
 		nn.ReLU(inplace=True),
 		nn.Conv2d(out_,out_,kernel_size=3,padding=(1,1)),
-		nn.ReLU(inplace=True)
+		nn.ReLU(inplace=True),
+        nn.Dropout(drop)
 		)
 	return conv
 
@@ -58,7 +59,7 @@ def epoch_hook(model, image):
 
 class EffUNet(nn.Module):
 
-	def __init__(self,model='b0',out_channels=2,freeze_backbone=True,pretrained=True,device='cuda'):
+	def __init__(self,model='b0',out_channels=2,dropout=0.1,freeze_backbone=True,pretrained=True,device='cuda'):
 		super(EffUNet,self).__init__()
 		global layers, shapes
 
@@ -98,7 +99,7 @@ class EffUNet(nn.Module):
 		for i in range(len(shapes)-1):
 			self.decoder.append(torch.nn.modules.container.ModuleList())
 			self.decoder[i].append(nn.ConvTranspose2d(shapes[i][1],shapes[i][1]-shapes[i+1][1],kernel_size=2,stride=2).to(self.device))
-			self.decoder[i].append(double_conv(shapes[i][1],shapes[i+1][1]).to(self.device))
+			self.decoder[i].append(double_conv(shapes[i][1],shapes[i+1][1],dropout).to(self.device))
 
 		#output layer
 		self.out = nn.Conv2d(shapes[-1][1],out_channels,kernel_size=1).to(self.device)
@@ -106,6 +107,13 @@ class EffUNet(nn.Module):
 	def forward(self, image):
 		global layers
 		
+		h=image.shape[2]
+		w=image.shape[3]
+		if h%8!=0 or w%8!=0:
+			new_h = round(h/8)*8
+			new_w = round(w/8)*8
+			image =  T.Resize((new_h,new_w))(image)
+
 		# Encoder
 		epoch_hook(self.encoder, image) # required outputs accumulate in "encoder_out"
 
@@ -122,8 +130,8 @@ class EffUNet(nn.Module):
 		x = self.out(x)
 		return x
 
-# img = torch.rand([1,3,576,576]).cuda()
+# img = torch.rand([1,3,572,572]).cuda()
 # model = EffUNet()
-# # print(model)
+# print(model)
 # out = model(img)
 # print(out.shape)
