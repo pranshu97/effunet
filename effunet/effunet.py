@@ -59,7 +59,7 @@ def epoch_hook(model, image):
 
 class EffUNet(nn.Module):
 
-	def __init__(self,model='b0',out_channels=2,dropout=0.1,freeze_backbone=True,pretrained=True,device='cuda'):
+	def __init__(self,model='b0',out_channels=2,dropout=0.1,freeze_backbone=True,pretrained=True,device='cuda',num_gpu=1):
 		super(EffUNet,self).__init__()
 		global layers, shapes
 
@@ -104,6 +104,10 @@ class EffUNet(nn.Module):
 		#output layer
 		self.out = nn.Conv2d(shapes[-1][1],out_channels,kernel_size=1).to(self.device)
 
+		# Handling multiple GPUs
+		if num_gpu>1 and device=='cuda':
+			self.encoder = nn.DataParallel(self.encoder)
+
 	def forward(self, image):
 		global layers
 		
@@ -130,8 +134,8 @@ class EffUNet(nn.Module):
 		x = self.out(x)
 		return x
 
-# img = torch.rand([1,3,572,572]).cuda()
+# img = torch.rand([1,3,512,512]).cuda()
 # model = EffUNet()
-# print(model)
+# # print(model)
 # out = model(img)
 # print(out.shape)
